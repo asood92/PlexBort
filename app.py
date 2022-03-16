@@ -1,12 +1,15 @@
 import os
 import discord
+import requests
+import xml.etree.ElementTree as ET
 
-client = discord.Client()
+client = discord.Client();
 
 BASE_URL = os.getenv('BASE_URL')
-QUERY_PATH = "/library/recentlyAdded"
 PLEX_API_TOKEN = os.getenv('PLEX_API_TOKEN')
 SONARR_API_TOKEN = os.getenv('SONARR_API_TOKEN')
+DISCORD_API_TOKEN = os.getenv('DISCORD_API_TOKEN')
+QUERY_PATH = "/library/recentlyAdded"
 
 @client.event
 async def on_ready():
@@ -28,6 +31,14 @@ async def on_message(message):
                 !recentlyadded - to get the latest additions to Plex \n \
             ")
     if message.content.startswith('!recentlyadded'):
-        await message.channel.send("{BASE_URL}{QUERY_PATH}")
+        res = get_recently_added()
+        print("got response \n")
+        await message.channel.send(res)
+
+def get_recently_added():
+    response = requests.get(f"{BASE_URL}{QUERY_PATH}", headers={'X-Plex-Token': PLEX_API_TOKEN})
+    parsed = ET.fromstring(response)
+    print(parsed)
+    return parsed
 
 client.run(os.getenv('TOKEN'))
