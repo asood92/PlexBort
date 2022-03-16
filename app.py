@@ -39,22 +39,19 @@ async def on_message(message):
         pretty_output = ""
         for i in range(len(res)):
             for k,v in res[i].items():
-                if len(pretty_output) > 1300:
-                    await message.channel.send(pretty_output)
-                    pretty_output = ""
                 pretty_output += str(k) + ": " + str(v) + "\n"
+            await message.channel.send(pretty_output)
+            pretty_output = ""
             pretty_output += "\n"
         # for item in res:
         #     for k,v in item.items():
         #         pretty_output += f"{k}: {v}\n"
-        await message.channel.send(pretty_output)
 
 def get_recently_added():
     response = requests.get(f"{BASE_URL}{QUERY_RECENTS}", headers={'Accept': 'application/json', 'X-Plex-Token': PLEX_API_TOKEN})
     json_data = response.json()
     # print(json_data)
 
-    desired_fields = 'title', 'thumb', 'year',
     results = list()
     desired_number_results = 5
     uniques = list()
