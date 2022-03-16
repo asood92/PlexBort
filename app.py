@@ -1,7 +1,12 @@
-import discord
 import os
+import discord
 
 client = discord.Client()
+
+BASE_URL = os.getenv('BASE_URL')
+QUERY_PATH = "/library/recentlyAdded"
+PLEX_API_TOKEN = os.getenv('PLEX_API_TOKEN')
+SONARR_API_TOKEN = os.getenv('SONARR_API_TOKEN')
 
 @client.event
 async def on_ready():
@@ -22,5 +27,7 @@ async def on_message(message):
                 !help - to get this message \n \
                 !recentlyadded - to get the latest additions to Plex \n \
             ")
+    if message.content.startswith('!recentlyadded'):
+        await message.channel.send("{BASE_URL}{QUERY_PATH}")
 
 client.run(os.getenv('TOKEN'))
