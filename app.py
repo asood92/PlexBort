@@ -1,13 +1,11 @@
 import os
 import discord
 import requests
-import xml.etree.ElementTree as ET
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = discord.Client();
-
+client = discord.Client()
 BASE_URL = os.getenv('BASE_URL')
 PLEX_API_TOKEN = os.getenv('PLEX_API_TOKEN')
 SONARR_API_TOKEN = os.getenv('SONARR_API_TOKEN')
@@ -38,8 +36,8 @@ async def on_message(message):
         print("got response \n")
         pretty_output = ""
         for i in range(len(res)):
-            for k,v in res[i].items():
-                pretty_output += str(k) + ": " + str(v) + "\n"
+            for key, value in res[i].items():
+                pretty_output += str(key) + ": " + str(value) + "\n"
             await message.channel.send(pretty_output)
             pretty_output = ""
             pretty_output += "\n"
