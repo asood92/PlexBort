@@ -1,4 +1,5 @@
 import os
+from re import M
 import discord
 import requests
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ async def on_message(message):
         await message.channel.send("Pong!")
 
     if message.content.startswith('!help'):
-        await message.channel.send("Hi, I'm PlexBort! \n\
+        await message.channel.send("Hi, I'm PlexBot! \n\
             I'm a statistics bot, and I can do a few things! Commands are: \n \
                 !ping - to get my status \n \
                 !help - to get this message \n \
@@ -34,13 +35,40 @@ async def on_message(message):
     if message.content.startswith('!recentlyadded'):
         res = get_recently_added()
         print("got response \n")
-        pretty_output = ""
+        # pretty_output = ""
+        output = discord.Embed(title="Recently Added")
+        # for i in range(len(res)):
+        #     for key, value in res[i].items():
+        #         # await message.channel.send(f"{key}: **{value}")
+        #         pretty_output += str(key) + ": **" + str(value) + "\n"
+        #         # if len(pretty_output) > 1800:
+        #         # pretty_output = ""
+
+        print(res, type(res))
         for i in range(len(res)):
-            for key, value in res[i].items():
-                pretty_output += str(key) + ": " + str(value) + "\n"
-            await message.channel.send(pretty_output)
-            pretty_output = ""
-            pretty_output += "\n"
+            for k, v in res[i].items():
+                print(k, v)
+                if k == "Poster" or k == "Thumb":
+                    output.set_image(url=v)
+                else:
+                    output.add_field(name=k, value=v, inline=False)
+            await message.channel.send(embed=output)
+            output = discord.Embed(title="Recently Added")
+        # message_fields = discord.Embed.from_dict(res)
+        # print(message_fields)
+        # for item in res.keys():
+        #     output.add_field(name=item, value=item.value, inline=False)
+        # print(output)
+        # newMessage = discord.Embed(title="Recently Added", fields=output)
+
+        # if len(pretty_output) > 2000:
+        #     await message.channel.send(f"{pretty_output[:2000]}
+        # else:
+        #     await message.channel.send(f"{pretty_output}")
+        # await message.channel.send(embed=output)
+
+            # pretty_output = ""
+            # pretty_output += "\n"
         # for item in res:
         #     for k,v in item.items():
         #         pretty_output += f"{k}: {v}\n"
@@ -50,8 +78,8 @@ def get_recently_added():
     json_data = response.json()
     # print(json_data)
 
-    results = list()
-    desired_number_results = 5
+    results = []
+    desired_number_results = 3
     uniques = list()
 
     while len(results) < desired_number_results:
@@ -69,22 +97,20 @@ def get_recently_added():
                         continue
                     uniques.append(item['parentTitle'])
                     print(f"added {item['parentTitle']} to uniques")
-                    results.append({
-                        'Year': item['parentYear'],
+                    results += [{
                         'Poster': BASE_URL+item['parentThumb']+'?X-Plex-Token='+PLEX_API_TOKEN,
-                        'Title': item['parentTitle'],
-                        'parentSummary': item['parentSummary'],
-                    })
+                        'Title': item['parentTitle'] + " - " + str(item['parentYear']),
+                        'Summary': item['parentSummary'] + "\n",
+                    }]
                     print(f"added {item['parentTitle']} to results from tv")
 
                 else:
-                    results.append({
-                        'title': item['title'],
-                        'thumb': BASE_URL+item['thumb']+'?X-Plex-Token='+PLEX_API_TOKEN,
-                        'year': item['year'],
-                        'summary': item['summary'],
+                    results += [{
+                        'Thumb': BASE_URL+item['thumb']+'?X-Plex-Token='+PLEX_API_TOKEN,
+                        'Title': item['title'] + " - " + str(item['year']),
+                        'Summary': item['summary'] + "\n",
 
-                    })
+                    }]
                     print(f"added {item['title']} to results from movies")
 
                 # uniques.append([item['parentTitle']])
@@ -100,6 +126,8 @@ def get_recently_added():
     #     print(child.tag, child.attrib)
 
     # print(results[0])
+    # print(type(results))
+    # print(results)
     return results
 
 
