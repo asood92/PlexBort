@@ -2,7 +2,7 @@
 A discord bot to monitor and query your Plex server.
 
 #### Installation
-[Docker Link](https://hub.docker.com/repository/docker/rem3dy/plexbot)
+[Docker Link](https://hub.docker.com/repository/docker/rem3dy/plexbot)  
 Pull the image.
 Create your environment variables file as follows.
 ```
