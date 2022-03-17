@@ -29,11 +29,13 @@ async def on_message(message):
             I'm a statistics bot, and I can do a few things! Commands are: \n \
                 !ping - to get my status \n \
                 !help - to get this message \n \
-                !recentlyadded - to get the latest additions to Plex \n \
+                !recentlyadded <number> - to get <number> of recent additions to Plex \n \
             ")
     if message.content.startswith('!recentlyadded'):
-        res = get_recently_added()
+        number_of_items = message.content.split(' ')[1]
+        res = get_recently_added(int(number_of_items))
         output = discord.Embed(title="Recently Added")
+
         for i in range(len(res)):
             for k, v in res[i].items():
                 print(k, v)
@@ -44,17 +46,16 @@ async def on_message(message):
             await message.channel.send(embed=output)
             output = discord.Embed(title="Recently Added")
 
-def get_recently_added():
+def get_recently_added(number_of_items):
     response = requests.get(f"{BASE_URL}{QUERY_RECENTS}", headers={'Accept': 'application/json', 'X-Plex-Token': PLEX_API_TOKEN})
     json_data = response.json()
 
     results = []
-    desired_number_results = 3
     uniques = list()
 
-    while len(results) < desired_number_results:
+    while len(results) < number_of_items:
         for item in json_data['MediaContainer']['Metadata']:
-            if len(results) >= desired_number_results:
+            if len(results) >= number_of_items:
                 break
             else:
                 if 'parentTitle' in item.keys():
